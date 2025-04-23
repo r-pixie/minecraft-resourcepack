@@ -18,8 +18,8 @@ jobs:
 
       - name: Update HTML
         run: |
-          sed -i "s|data-sha1=\"[^\"]*\"|data-sha1=\"${{ steps.sha.outputs.sha1 }}\"|g" index.html
-          sed -i "s|const sha1 = \".*\"|const sha1 = \"${{ steps.sha.outputs.sha1 }}\"|g" index.html
+          sed -i "s|data-sha1=\"[^\"]*\"|data-sha1=\"${{ steps.sha.outputs.sha1 }}\"|g" gh-pages/index.html
+          sed -i "s|const sha1 = \".*\"|const sha1 = \"${{ steps.sha.outputs.sha1 }}\"|g" gh-pages/index.html
 
       - name: Commit and push
         uses: stefanzweifel/git-auto-commit-action@v5
