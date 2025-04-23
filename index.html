@@ -1,95 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Minecraft Resource Pack</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #121212;
-      color: #fff;
+      font-family: Arial, sans-serif;
+      background-color: #1e1e2f;
+      color: white;
       text-align: center;
-      padding: 2em;
+      padding: 50px;
     }
-    .box {
-      background: #1e1e1e;
-      border-radius: 12px;
-      padding: 2em;
-      display: inline-block;
-      max-width: 600px;
-    }
-    button {
-      background: #3f51b5;
+    .btn {
+      background-color: #4f46e5;
       color: white;
       padding: 10px 20px;
+      margin: 10px;
       border: none;
       border-radius: 8px;
-      font-size: 1em;
       cursor: pointer;
-      margin-top: 1em;
+      font-size: 16px;
     }
-    .copied {
-      color: #4CAF50;
-      font-size: 0.9em;
-      margin-top: 0.3em;
-      height: 1.2em;
-    }
-    .sha-section {
-      margin-top: 2em;
-    }
-    .sha-text {
+    .hash-box {
+      margin-top: 20px;
       font-family: monospace;
-      color: #ccc;
-      margin-top: 0.5em;
       word-break: break-all;
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>🧊 Minecraft Resource Pack</h1>
 
-    <p>Click below to copy the resource pack URL:</p>
-    <button onclick="copyLink()">📋 Copy URL</button>
-    <div class="copied" id="copy-msg-url"></div>
+  <h1>🎮 Minecraft Resource Pack</h1>
 
-    <div class="sha-section">
-      <p>Click below to copy the SHA1:</p>
-      <button onclick="copySHA()">📋 Copy SHA1</button>
-      <div class="copied" id="copy-msg-sha"></div>
-      <div class="sha-text" id="sha1">Fetching SHA1...</div>
-    </div>
-  </div>
+  <p>Click below to copy the resource pack URL:</p>
+  <button class="btn" onclick="copyToClipboard(resourceURL)">📋 Copy URL</button>
+
+  <p>Click below to copy the SHA1:</p>
+  <button class="btn" onclick="copyToClipboard(latestSHA)">📋 Copy SHA1</button>
+
+  <div class="hash-box" id="sha1Display">Calculating SHA1...</div>
 
   <script>
-    const packUrl = "https://r-pixie.github.io/minecraft-resourcepack/generated.zip";
-    let sha1 = "";
+    const resourceURL = "https://r-pixie.github.io/minecraft-resourcepack/generated.zip";
+    let latestSHA = "";
 
-    function copyLink() {
-      navigator.clipboard.writeText(packUrl).then(() => {
-        document.getElementById("copy-msg-url").textContent = "✅ Link copied!";
-        setTimeout(() => document.getElementById("copy-msg-url").textContent = "", 2000);
+    async function getSHA1(url) {
+      const response = await fetch(url);
+      const buffer = await response.arrayBuffer();
+      const hashBuffer = await crypto.subtle.digest('SHA-1', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard:\n" + text);
       });
     }
 
-    function copySHA() {
-      if (!sha1) return;
-      navigator.clipboard.writeText(sha1).then(() => {
-        document.getElementById("copy-msg-sha").textContent = "✅ SHA1 copied!";
-        setTimeout(() => document.getElementById("copy-msg-sha").textContent = "", 2000);
-      });
-    }
-
-    fetch("https://r-pixie.github.io/minecraft-resourcepack/sha1.txt")
-      .then(res => res.text())
-      .then(data => {
-        sha1 = data.trim();
-        document.getElementById("sha1").textContent = "SHA1: " + sha1;
-      })
-      .catch(() => {
-        document.getElementById("sha1").textContent = "❌ Failed to load SHA1";
-      });
+    getSHA1(resourceURL).then(hash => {
+      latestSHA = hash;
+      document.getElementById("sha1Display").textContent = `SHA1: ${hash}`;
+    }).catch(err => {
+      document.getElementById("sha1Display").textContent = "❌ Failed to fetch or compute SHA1.";
+      console.error(err);
+    });
   </script>
+
 </body>
 </html>
