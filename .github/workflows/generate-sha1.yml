@@ -24,7 +24,7 @@ jobs:
 
     - name: Copy resource pack and update HTML
       run: |
-        cp resourcepack/generated.zip gh-pages/generated.zip
+        cp generated.zip gh-pages/generated.zip
         sed -i "s/SHA1 : .*/SHA1 : $SHA1/" gh-pages/index.html
 
     - name: Commit and push changes
