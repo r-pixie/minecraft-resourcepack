@@ -6,14 +6,14 @@
   <style>
     body {
       font-family: sans-serif;
-      background-color: #1c1c2e;
+      background-color: #1e1e2f;
       color: #f0f0f0;
       text-align: center;
       padding: 2em;
     }
     button {
       padding: 10px 20px;
-      background-color: #4287f5;
+      background-color: #4a90e2;
       border: none;
       border-radius: 6px;
       color: white;
@@ -30,16 +30,18 @@
     }
   </style>
 </head>
-<body data-url="https://r-pixie.github.io/minecraft-resourcepack/generated.zip" data-sha1="4a4a06a85c9bd920133a63ee6c229165c96e666b">
-  <h1>Minecraft Resource Pack</h1>
+<body data-url="__PACK_URL__" data-sha1="__SHA1_HASH__">
+  <h1>Resource Pack Info</h1>
 
-  <p>Click to copy your pack link:</p>
-  <button onclick="copyText(document.body.dataset.url)">📄 Copy URL</button>
+  <p>Copy your pack link:</p>
+  <button onclick="copyText(document.body.dataset.url)">📋 Copy Pack URL</button>
 
-  <p>Click to copy the SHA1 hash:</p>
-  <button onclick="copyText(document.body.dataset.sha1)">📄 Copy SHA1</button>
+  <p>Copy the SHA1 hash:</p>
+  <button onclick="copyText(document.body.dataset.sha1)">📋 Copy SHA1</button>
 
-  <div class="output">SHA1: <span id="sha1-text">4a4a06a85c9bd920133a63ee6c229165c96e666b</span></div>
+  <div class="output">
+    SHA1: <span id="sha1-text">__SHA1_HASH__</span>
+  </div>
 
   <script>
     const sha1 = document.body.dataset.sha1;
