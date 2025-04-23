@@ -1,34 +1,42 @@
-name: Update SHA1 in HTML
+name: Update SHA1 and HTML
 
 on:
   push:
     branches: [main]
     paths:
-      - "generated.zip"
+      - generated.zip
 
 jobs:
-  update-sha1:
+  update-html:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-
-      - name: Generate SHA1 hash
-        id: sha
-        run: |
-          HASH=$(sha1sum generated.zip | awk '{ print $1 }')
-          echo "SHA1=$HASH" >> $GITHUB_ENV
-          echo "Generated SHA1: $HASH"
-
-      - name: Checkout gh-pages branch
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          ref: gh-pages
-          path: gh-pages
+          fetch-depth: 0  # Ensure full history for GH Pages
 
-      - name: Update HTML with SHA1
+      - name: Calculate SHA1
+        id: hash
         run: |
-          sed -i "s/PLACEHOLDER/$SHA1/g" gh-pages/index.html
+          sha1=$(sha1sum generated.zip | awk '{print $1}')
+          echo "SHA1=$sha1"
+          echo "sha1=$sha1" >> $GITHUB_OUTPUT
+
+      - name: Debug: Show current placeholder state
+        run: |
+          echo "== BEFORE =="
+          cat gh-pages/index.html
+
+      - name: Replace SHA1 placeholder in HTML
+        run: |
+          sed -i "s|SHA1: PLACEHOLDER|SHA1: ${SHA1}|" gh-pages/index.html
+        env:
+          SHA1: ${{ steps.hash.outputs.sha1 }}
+
+      - name: Debug: Show updated HTML
+        run: |
+          echo "== AFTER =="
+          cat gh-pages/index.html
 
       - name: Commit & Push updated HTML
         run: |
@@ -36,5 +44,4 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add index.html
-          git commit -m "Update SHA1 in HTML"
-          git push
+          git diff --quiet && echo "No changes to commit" || (git commit -m "Update SHA1 in HTML" && git push)
