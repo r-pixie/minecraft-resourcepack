@@ -1,4 +1,4 @@
-name: Update GitHub Pages with Resource Pack
+name: Update Resource Pack
 
 on:
   push:
@@ -8,38 +8,37 @@ on:
       - 'generated.zip'
 
 jobs:
-  deploy:
+  update-gh-pages:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main branch
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Calculate SHA1
+      - name: Calculate SHA1 of generated.zip
         id: sha
         run: |
-          echo "SHA1=$(sha1sum generated.zip | awk '{ print $1 }')" >> $GITHUB_OUTPUT
+          sha1=$(sha1sum generated.zip | awk '{ print $1 }')
+          echo "SHA1=$sha1" >> $GITHUB_OUTPUT
 
-      - name: Checkout gh-pages branch
-        uses: actions/checkout@v3
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Copy files to gh-pages
+      - name: Clone gh-pages branch
         run: |
-          cp generated.zip gh-pages/generated.zip
+          git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages
 
-      - name: Update index.html SHA1 + URL
+      - name: Copy updated generated.zip
+        run: |
+          cp generated.zip gh-pages/
+
+      - name: Replace placeholders in index.html
         run: |
           cd gh-pages
           sed -i "s|__SHA1_HASH__|${{ steps.sha.outputs.SHA1 }}|g" index.html
           sed -i "s|__PACK_URL__|https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/generated.zip|g" index.html
 
-      - name: Commit and push
+      - name: Commit and push changes
         run: |
           cd gh-pages
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .
-          git commit -m "Update generated.zip and SHA1" || echo "No changes"
+          git add index.html generated.zip
+          git commit -m "Update resource pack and SHA1 hash" || echo "No changes to commit"
           git push origin gh-pages
