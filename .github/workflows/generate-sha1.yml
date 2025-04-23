@@ -1,0 +1,25 @@
+name: Generate SHA1 for Resource Pack
+
+on:
+  push:
+    paths:
+      - 'generated.zip'
+
+jobs:
+  calculate-sha1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Calculate SHA1
+        run: |
+          sha1sum generated.zip | awk '{ print $1 }' > sha1.txt
+
+      - name: Commit SHA1 file
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add sha1.txt
+          git commit -m "Update SHA1 hash" || echo "No changes to commit"
+          git push
