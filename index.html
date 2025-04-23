@@ -1,48 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Minecraft Resource Pack</title>
   <style>
-    body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 20px;
-    }
-    code {
-      background: #f2f2f2;
-      padding: 5px 10px;
-      border-radius: 5px;
-    }
-    button {
-      margin-left: 10px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
+    body { font-family: sans-serif; padding: 2em; background: #f4f4f4; }
+    .box { background: #fff; padding: 1em; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+    code { background: #eee; padding: 0.2em 0.4em; border-radius: 4px; }
+    button { margin-left: 1em; padding: 0.2em 0.5em; }
   </style>
 </head>
 <body>
-  <h1>Resource Pack Info</h1>
-
-  <p>
-    <strong>SHA1 Hash:</strong><br>
-    <code id="sha1">50ef0a4ad64ac01b48782ac4cf9faf3110006ddf</code>
-    <button onclick="copyToClipboard('sha1')">Copy SHA1</button>
-  </p>
-
-  <p>
-    <strong>Download URL:</strong><br>
-    <code id="url">https://r-pixie.github.io/minecraft-resourcepack/generated.zip</code>
-    <button onclick="copyToClipboard('url')">Copy URL</button>
-  </p>
+  <div class="box">
+    <h2>Minecraft Resource Pack</h2>
+    <p>
+      SHA1 Hash: <code id="sha1">__SHA1_HASH__</code>
+      <button onclick="copyToClipboard('sha1')">Copy SHA1</button>
+    </p>
+    <p>
+      Pack URL: <code id="url">__PACK_URL__</code>
+      <button onclick="copyToClipboard('url')">Copy URL</button>
+    </p>
+  </div>
 
   <script>
     function copyToClipboard(id) {
       const text = document.getElementById(id).textContent;
       navigator.clipboard.writeText(text).then(() => {
-        alert('Copied to clipboard');
+        alert('Copied to clipboard!');
       });
     }
   </script>
