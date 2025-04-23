@@ -2,26 +2,40 @@ name: Update SHA1 in HTML
 
 on:
   push:
+    branches:
+      - main
     paths:
-      - 'generated.zip'
+      - generated.zip
 
 jobs:
-  update-sha1:
+  update-html:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          persist-credentials: true
 
-      - name: Calculate SHA1
-        id: sha
-        run: echo "sha1=$(sha1sum generated.zip | cut -d ' ' -f1)" >> $GITHUB_OUTPUT
-
-      - name: Update HTML
+      - name: Download generated.zip from main
         run: |
-          sed -i "s|data-sha1=\"[^\"]*\"|data-sha1=\"${{ steps.sha.outputs.sha1 }}\"|g" gh-pages/index.html
-          sed -i "s|const sha1 = \".*\"|const sha1 = \"${{ steps.sha.outputs.sha1 }}\"|g" gh-pages/index.html
+          wget https://raw.githubusercontent.com/r-pixie/minecraft-resourcepack/main/generated.zip -O generated.zip
+
+      - name: Calculate SHA1 hash
+        id: hash
+        run: |
+          sha1=$(sha1sum generated.zip | awk '{print $1}')
+          echo "sha1=$sha1" >> $GITHUB_OUTPUT
+
+      - name: Update SHA1 in index.html
+        run: |
+          sed -i "s|data-sha1=\"[^\"]*\"|data-sha1=\"${{ steps.hash.outputs.sha1 }}\"|g" index.html
+          sed -i "s|const sha1 = \".*\"|const sha1 = \"${{ steps.hash.outputs.sha1 }}\"|g" index.html
 
       - name: Commit and push
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Update SHA1 in HTML"
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Update SHA1 in HTML"
+          git push origin gh-pages
