@@ -17,10 +17,8 @@ jobs:
 
     - name: Generate SHA1 hash
       run: |
-        cd resourcepack
-        sha1=$(sha1sum generated.zip | cut -d ' ' -f1)
-        echo "SHA1=$sha1" >> $GITHUB_ENV
-
+       sha1=$(sha1sum generated.zip | cut -d ' ' -f1)
+       echo "SHA1=$sha1" >> $GITHUB_ENV
     - name: Clone gh-pages branch
       run: git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages
 
