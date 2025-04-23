@@ -1,34 +1,39 @@
-name: Upload Resource Pack and Update SHA1
+name: Update SHA1 and Upload Pack
 
 on:
   push:
     branches:
       - main
-    paths:
-      - generated.zip
 
 jobs:
-  update-site:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
 
-      - name: Calculate SHA1
-        id: sha
-        run: echo "sha1=$(sha1sum generated.zip | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+    - name: Generate SHA1 hash
+      run: |
+        cd resourcepack
+        sha1=$(sha1sum generated.zip | cut -d ' ' -f1)
+        echo "SHA1=$sha1" >> $GITHUB_ENV
 
-      - name: Clone gh-pages branch
-        run: |
-          git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages
-          cp generated.zip gh-pages/
-          cd gh-pages
-          sed -i "s|<span id=\"sha1\">.*</span>|<span id=\"sha1\">${{ steps.sha.outputs.sha1 }}</span>|g" index.html
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add .
-          git commit -m "Update resource pack and SHA1 hash" || echo "No changes to commit"
-          git push
+    - name: Clone gh-pages branch
+      run: git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages
+
+    - name: Copy resource pack and update HTML
+      run: |
+        cp resourcepack/generated.zip gh-pages/generated.zip
+        sed -i "s/SHA1 : .*/SHA1 : $SHA1/" gh-pages/index.html
+
+    - name: Commit and push changes
+      run: |
+        cd gh-pages
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
+        git add .
+        git commit -m "Update resource pack and SHA1 hash" || echo "No changes to commit"
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:gh-pages
