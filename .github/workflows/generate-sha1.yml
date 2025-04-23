@@ -1,37 +1,36 @@
-name: Update SHA1 and HTML
+name: Update SHA1 in HTML
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - 'generated.zip'
-
-permissions:
-  contents: write
+      - "generated.zip"
 
 jobs:
-  update-sha1-html:
+  update-sha1:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout main
+        uses: actions/checkout@v4
 
-      - name: Calculate SHA1
-        id: sha1
-        run: echo "sha1=$(sha1sum generated.zip | awk '{ print $1 }')" >> "$GITHUB_OUTPUT"
+      - name: Generate SHA1 hash
+        id: sha
+        run: |
+          HASH=$(sha1sum generated.zip | awk '{ print $1 }')
+          echo "SHA1=$HASH" >> $GITHUB_ENV
+          echo "Generated SHA1: $HASH"
 
-      - name: Checkout GH Pages branch
-        uses: actions/checkout@v3
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages
 
-      - name: Update HTML with new SHA1
+      - name: Update HTML with SHA1
         run: |
-          sed -i "s/PLACEHOLDER/${{ steps.sha1.outputs.sha1 }}/g" gh-pages/index.html
+          sed -i "s/PLACEHOLDER/$SHA1/g" gh-pages/index.html
 
-      - name: Commit and push updated HTML
+      - name: Commit & Push updated HTML
         run: |
           cd gh-pages
           git config user.name "github-actions"
