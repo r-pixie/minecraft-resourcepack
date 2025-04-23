@@ -1,52 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Minecraft Resource Pack</title>
   <style>
-    body {
-      background-color: #1e1e2f;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 2rem;
-    }
-    .button {
-      margin: 1rem;
-      padding: 1rem 2rem;
-      background-color: #3b82f6;
-      border: none;
-      border-radius: 0.5rem;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .display-box {
-      display: inline-block;
-      background-color: #2c2c3a;
-      padding: 0.8rem 1rem;
-      border-radius: 0.4rem;
-      font-family: monospace;
-    }
+    body { font-family: Arial; background: #1e1e2f; color: white; text-align: center; padding: 50px; }
+    button, .hash-box { margin: 10px; padding: 10px 20px; background: #3b82f6; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 16px; }
+    .hash-box { background: #2d2d3a; display: inline-block; padding: 10px; }
   </style>
 </head>
 <body>
   <h1>Minecraft Resource Pack</h1>
+
   <p>Click to copy your pack link:</p>
-  <button class="button" onclick="copyText(url)">📋 Copy URL</button>
+  <button onclick="copyText('url')">📋 Copy URL</button>
+  <div id="url" style="display:none;">https://r-pixie.github.io/minecraft-resourcepack/generated.zip</div>
+
   <p>Click to copy the SHA1 hash:</p>
-  <button class="button" onclick="copyText(sha1)">📋 Copy SHA1</button>
-  <div class="display-box" id="sha1Box">SHA1: <span id="sha1">PLACEHOLDER</span></div>
+  <button onclick="copyText('sha1')">📋 Copy SHA1</button>
+  <div class="hash-box">SHA1 : 69dea14b328dfc86fa7abd51973d652c36df2582</div>
+  <div id="sha1" style="display:none;">69dea14b328dfc86fa7abd51973d652c36df2582</div>
 
   <script>
-    const url = "https://r-pixie.github.io/minecraft-resourcepack/generated.zip";
-    const sha1 = document.getElementById("sha1").textContent;
-
-    function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Copied: " + text);
-      });
+    function copyText(id) {
+      const text = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(text).then(() => alert('Copied!'));
     }
   </script>
 </body>
