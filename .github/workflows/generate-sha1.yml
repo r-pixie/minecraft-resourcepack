@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main
+      - name: Checkout main branch
         uses: actions/checkout@v4
 
       - name: Calculate SHA1 of generated.zip
@@ -37,11 +37,11 @@ jobs:
           sed -i "s|__PACK_URL__|$ZIP_URL|g" index.html
           sed -i "s|__SHA1_HASH__|${{ steps.sha.outputs.sha1 }}|g" index.html
 
-      - name: Commit and push
+      - name: Commit and push to gh-pages
         run: |
           cd gh-pages
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add generated.zip index.html
-          git commit -m "Update resource pack and SHA1" || echo "No changes to commit"
-          git push
+          git commit -m "Update generated.zip and SHA1" || echo "No changes to commit"
+          git push origin gh-pages
