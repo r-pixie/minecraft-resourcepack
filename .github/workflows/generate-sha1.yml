@@ -18,7 +18,7 @@ jobs:
       - name: Calculate SHA1 of generated.zip
         id: sha
         run: |
-          echo "::set-output name=sha1::$(sha1sum generated.zip | awk '{ print $1 }')"
+          echo "sha1=$(sha1sum generated.zip | awk '{ print $1 }')" >> $GITHUB_OUTPUT
 
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
@@ -34,8 +34,8 @@ jobs:
         working-directory: gh-pages
         run: |
           ZIP_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/generated.zip"
-          sed -i "s|data-url=\"[^\"]*\"|data-url=\"$ZIP_URL\"|" index.html
-          sed -i "s|data-sha1=\"[^\"]*\"|data-sha1=\"${{ steps.sha.outputs.sha1 }}\"|" index.html
+          sed -i "s|__PACK_URL__|$ZIP_URL|g" index.html
+          sed -i "s|__SHA1_HASH__|${{ steps.sha.outputs.sha1 }}|g" index.html
 
       - name: Commit and push
         run: |
