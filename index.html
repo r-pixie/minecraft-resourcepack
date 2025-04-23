@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Minecraft Resource Pack</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #121212;
+      color: #fff;
+      text-align: center;
+      padding: 2em;
+    }
+    .box {
+      background: #1e1e1e;
+      border-radius: 12px;
+      padding: 2em;
+      display: inline-block;
+      max-width: 600px;
+    }
+    button {
+      background: #3f51b5;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      margin-top: 1em;
+    }
+    .copied {
+      color: #4CAF50;
+      font-size: 0.9em;
+      margin-top: 0.3em;
+      height: 1.2em;
+    }
+    .sha-section {
+      margin-top: 2em;
+    }
+    .sha-text {
+      font-family: monospace;
+      color: #ccc;
+      margin-top: 0.5em;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🧊 Minecraft Resource Pack</h1>
+
+    <p>Click below to copy the resource pack URL:</p>
+    <button onclick="copyLink()">📋 Copy URL</button>
+    <div class="copied" id="copy-msg-url"></div>
+
+    <div class="sha-section">
+      <p>Click below to copy the SHA1:</p>
+      <button onclick="copySHA()">📋 Copy SHA1</button>
+      <div class="copied" id="copy-msg-sha"></div>
+      <div class="sha-text" id="sha1">Fetching SHA1...</div>
+    </div>
+  </div>
+
+  <script>
+    const packUrl = "https://r-pixie.github.io/minecraft-resourcepack/generated.zip";
+    let sha1 = "";
+
+    function copyLink() {
+      navigator.clipboard.writeText(packUrl).then(() => {
+        document.getElementById("copy-msg-url").textContent = "✅ Link copied!";
+        setTimeout(() => document.getElementById("copy-msg-url").textContent = "", 2000);
+      });
+    }
+
+    function copySHA() {
+      if (!sha1) return;
+      navigator.clipboard.writeText(sha1).then(() => {
+        document.getElementById("copy-msg-sha").textContent = "✅ SHA1 copied!";
+        setTimeout(() => document.getElementById("copy-msg-sha").textContent = "", 2000);
+      });
+    }
+
+    fetch("https://r-pixie.github.io/minecraft-resourcepack/sha1.txt")
+      .then(res => res.text())
+      .then(data => {
+        sha1 = data.trim();
+        document.getElementById("sha1").textContent = "SHA1: " + sha1;
+      })
+      .catch(() => {
+        document.getElementById("sha1").textContent = "❌ Failed to load SHA1";
+      });
+  </script>
+</body>
+</html>
