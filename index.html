@@ -2,59 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Minecraft Resource Pack</title>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #1e1e2f;
-      color: white;
+      background-color: #1c1c2e;
+      color: #f0f0f0;
       text-align: center;
-      padding: 40px;
+      padding: 2em;
     }
-    .button {
-      margin: 10px;
+    button {
       padding: 10px 20px;
-      background-color: #3b82f6;
-      color: white;
+      background-color: #4287f5;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
+      color: white;
+      font-size: 16px;
       cursor: pointer;
+      margin: 0.5em;
     }
-    .hash-box {
-      margin-top: 20px;
-      font-family: monospace;
-      background-color: #2a2a3b;
-      padding: 10px;
+    .output {
+      background: #2a2a3d;
       border-radius: 5px;
+      padding: 10px;
+      margin-top: 10px;
       display: inline-block;
     }
   </style>
 </head>
-<body>
+<body data-url="PLACEHOLDER" data-sha1="PLACEHOLDER">
   <h1>Minecraft Resource Pack</h1>
 
   <p>Click to copy your pack link:</p>
-  <button class="button" onclick="copyTextToClipboard(packUrl)">📋 Copy URL</button>
+  <button onclick="copyText(document.body.dataset.url)">📄 Copy URL</button>
 
   <p>Click to copy the SHA1 hash:</p>
-  <button class="button" onclick="copyTextToClipboard(sha1)">📋 Copy SHA1</button>
+  <button onclick="copyText(document.body.dataset.sha1)">📄 Copy SHA1</button>
 
-  <div class="hash-box">
-    SHA1: <span id="sha1-text">848cb2bca2c79034a6fa5c8a678538eac833a37d</span>
-  </div>
+  <div class="output">SHA1: <span id="sha1-text">PLACEHOLDER</span></div>
 
   <script>
-    const packUrl = "https://r-pixie.github.io/minecraft-resourcepack/generated.zip";
-    const sha1 = "b0e5418a664f584b012cc788706a033e13b82297";
+    const sha1 = document.body.dataset.sha1;
+    const url = document.body.dataset.url;
+    document.getElementById("sha1-text").textContent = sha1;
 
-    function copyTextToClipboard(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert("Copied!");
-      });
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() =>
+        alert("Copied to clipboard:\n" + text)
+      );
     }
-
-    document.getElementById("sha1-text").innerText = sha1;
   </script>
 </body>
 </html>
