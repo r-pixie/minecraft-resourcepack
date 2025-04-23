@@ -1,47 +1,46 @@
-name: Update SHA1 and HTML
+name: Update Pack Page
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - generated.zip
 
 jobs:
-  update-html:
+  update-page:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensure full history for GH Pages
+          fetch-depth: 0
 
       - name: Calculate SHA1
-        id: hash
+        id: sha1
         run: |
           sha1=$(sha1sum generated.zip | awk '{print $1}')
-          echo "SHA1=$sha1"
           echo "sha1=$sha1" >> $GITHUB_OUTPUT
 
-      - name: Debug: Show current placeholder state
+      - name: Clone gh-pages branch
         run: |
-          echo "== BEFORE =="
-          cat gh-pages/index.html
+          git clone --branch gh-pages https://github.com/${{ github.repository }} gh-pages
 
-      - name: Replace SHA1 placeholder in HTML
+      - name: Move generated.zip to gh-pages
         run: |
-          sed -i "s|SHA1: PLACEHOLDER|SHA1: ${SHA1}|" gh-pages/index.html
-        env:
-          SHA1: ${{ steps.hash.outputs.sha1 }}
+          cp generated.zip gh-pages/
 
-      - name: Debug: Show updated HTML
+      - name: Update index.html placeholders
         run: |
-          echo "== AFTER =="
-          cat gh-pages/index.html
+          sed -i "s|data-sha1=\"[^"]*\"|data-sha1=\"${{ steps.sha1.outputs.sha1 }}\"|g" gh-pages/index.html
+          sed -i "s|data-url=\"[^"]*\"|data-url=\"https://$GITHUB_REPOSITORY_OWNER.github.io/${{ github.event.repository.name }}/generated.zip\"|g" gh-pages/index.html
 
-      - name: Commit & Push updated HTML
+      - name: Commit and push changes
         run: |
           cd gh-pages
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add index.html
-          git diff --quiet && echo "No changes to commit" || (git commit -m "Update SHA1 in HTML" && git push)
+          git add generated.zip index.html
+          git diff --cached --quiet || git commit -m "Update generated.zip and SHA1"
+          git push
